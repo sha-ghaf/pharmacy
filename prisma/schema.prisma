@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                 Int                  @id @default(autoincrement())
+    name               String
+    email              String               @unique
+    phoneNumber        String
+    user               order[]
+}
+
+model Product {
+    id                 Int                  @id @default(autoincrement())
+    productName        String
+    quantity           Int
+    categoryId         Int                  @unique
+    idCate             category[]
+    product            orderProducts[]
+}
+
+model category {
+    id            Int            @id @default(autoincrement())
+    idCategory    Product        @relation(fields: [id], references: [categoryId])
+    categoryName  String         @unique
+}
+
+model order {
+    id      Int            @id @default(autoincrement())
+    userId  Int
+    user    User           @relation(fields: [userId], references: [id])
+    order   orderProducts[]
+}
+
+model orderProducts {
+  orderId       Int
+  order         order        @relation(fields: [orderId], references: [id])
+  prodectId     Int
+  product       Product      @relation(fields: [prodectId], references: [id])
+  quantityTaken Int
+  @@id([orderId, prodectId])
+}
+
+
+// npx prisma generate
+// npx prisma migrate dev
